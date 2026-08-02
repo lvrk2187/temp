@@ -3,9 +3,12 @@
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #define SIZE_OF_STRING 8
 #define SIZE_OF_ALL_POSSIBLE_CHARACTERS 62
+
+const char starting_c_code[] = "#include <stdio.h>\n\nint main() {\n\n\treturn 0;\n}";
 
 const char possible_characters[] = {
     'A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -40,6 +43,7 @@ int main(int argc, char **argv) {
 
   } while (stat(name, &stat_of_file) != -1);
 
+
   mkdir(name, S_IRWXU);
 
   snprintf(buffer, 32, "./%s/%s.c", name, name);
@@ -49,7 +53,14 @@ int main(int argc, char **argv) {
   if (if_created == -1) {
     printf("[ERROR] : Creating File");
   }
-
   
+  FILE* file = fopen(buffer, "w");
+
+  if (file == NULL) {
+    printf("[ERROR] : File Piping");
+  }
+
+  fputs(starting_c_code, file); 
+
   return 0;
 }
