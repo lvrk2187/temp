@@ -9,6 +9,7 @@
 #define SIZE_OF_ALL_POSSIBLE_CHARACTERS 62
 
 const char starting_c_code[] = "#include <stdio.h>\n\nint main() {\n\n\treturn 0;\n}";
+const char starting_makefile[] = "SRCS = $(wildcard *c)\n\nrun:\n\tgcc $(SRCS) && ./a.out";
 
 const char possible_characters[] = {
     'A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -38,29 +39,32 @@ int main(int argc, char **argv) {
   struct stat stat_of_file; 
   
   do {
-
     name = build_name();
-
   } while (stat(name, &stat_of_file) != -1);
-
 
   mkdir(name, S_IRWXU);
 
   snprintf(buffer, 32, "./%s/%s.c", name, name);
-
-  int if_created = creat(buffer, S_IRWXU);
-
-  if (if_created == -1) {
-    printf("[ERROR] : Creating File");
-  }
+  int if_c_file_created = creat(buffer, S_IRWXU);
+  if (if_c_file_created == -1) printf("[ERROR] : Creating C File");
   
-  FILE* file = fopen(buffer, "w");
+  FILE* c_file = fopen(buffer, "w");
+  if (c_file == NULL) printf("[ERROR] : Writing C File");
 
-  if (file == NULL) {
-    printf("[ERROR] : File Piping");
-  }
+  fputs(starting_c_code, c_file); 
+  fclose(c_file);
 
-  fputs(starting_c_code, file); 
+  snprintf(buffer, 32, "./%s/makefile", name);
+  int if_makefile_created = creat(buffer, S_IRWXU);
+  if (if_makefile_created == -1) printf("[ERROR] : Creating Makefile");
+
+  FILE* makefile = fopen(buffer, "w");
+  if (makefile == NULL) printf("[ERROR] : Writing Makefile");
+
+  fputs(starting_makefile, makefile);
+  fclose(makefile);
+  
+  free(name);  
 
   return 0;
 }
