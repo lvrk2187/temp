@@ -29,18 +29,27 @@ char* build_name() {
 }
 
 int main(int argc, char **argv) {
-  
-  char* name = build_name();
 
+  char* name;
   char buffer[256];
-           
+  struct stat stat_of_file; 
+  
+  do {
+
+    name = build_name();
+
+  } while (stat(name, &stat_of_file) != -1);
+
   mkdir(name, S_IRWXU);
 
-  snprintf(buffer, 16, "%s/%s.c", name, name);
+  snprintf(buffer, 32, "./%s/%s.c", name, name);
 
-  creat(buffer, S_IRWXU);
+  int if_created = creat(buffer, S_IRWXU);
+
+  if (if_created == -1) {
+    printf("[ERROR] : Creating File");
+  }
 
   
-
   return 0;
 }
