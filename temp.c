@@ -13,6 +13,15 @@
 const char starting_c_code[] = "#include <stdio.h>\n\nint main() {\n\n\treturn 0;\n}";
 const char starting_makefile[] = "SRCS = $(wildcard *c)\n\nrun:\n\tgcc $(SRCS) && ./a.out";
 
+/*
+ctemp:
+  -n = new temporary c proj
+  -d = deletes temporary c proj specified by argv[2]
+  -a = deletes all temporary c proj
+  -h = help
+*/
+const char usage[] = "usage: ctemp -[adhn] [directory]";
+
 char *home_path;
 char registry_dir[DEFAULT_SIZE];
 
@@ -103,22 +112,18 @@ void create_file() {
   fputs(starting_makefile, makefile);
   fclose(makefile);
 
-
   free(name);  
 }
 
-
-
-
 int main(int argc, char **argv) {
 
-  
-  // mkdir("~/.ctemp", DEFAULT_MODE);
+
+  printf("%s", argv[0]);
 
   // generating actual temporary file
   // printf("%d", S_IRWXU);
   // create_file();
-  inital_directory_setup();
+  // inital_directory_setup();
   
   return 0;
 }
