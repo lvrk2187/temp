@@ -7,12 +7,14 @@
 
 #define SIZE_OF_STRING 8
 #define SIZE_OF_ALL_POSSIBLE_CHARACTERS 62
+#define DEFAULT_SIZE 512
 #define DEFAULT_MODE S_IRWXU | S_IRWXG | S_IRWXO
 
 const char starting_c_code[] = "#include <stdio.h>\n\nint main() {\n\n\treturn 0;\n}";
 const char starting_makefile[] = "SRCS = $(wildcard *c)\n\nrun:\n\tgcc $(SRCS) && ./a.out";
 
 char *home_path;
+char registry_dir[DEFAULT_SIZE];
 
 const char possible_characters[] = {
     'A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -36,7 +38,7 @@ char* build_name() {
 }
 
 void inital_directory_setup() {
-  char buffer[512];
+  char buffer[DEFAULT_SIZE];
   home_path = getenv("HOME");
   struct stat stat_of_storing_txt_file;
   struct stat stat_of_if_directory_exists;
@@ -46,23 +48,33 @@ void inital_directory_setup() {
     strncpy(home_path, ".", 2);
   }
 
-  snprintf(buffer, 256, "%s/.ctemp", home_path);
+  snprintf(buffer, DEFAULT_SIZE, "%s/.ctemp", home_path);
 
   if ((stat(buffer, &stat_of_if_directory_exists) == -1 && S_ISDIR(stat_of_if_directory_exists.st_mode))) {
     mkdir(buffer, DEFAULT_MODE);
   }
 
-  snprintf(buffer, 256, "%s/store.txt", buffer);
+  snprintf(buffer, DEFAULT_SIZE, "%s/registry.txt", buffer);
 
   if(stat(buffer, &stat_of_storing_txt_file) == -1) {
     creat(buffer, DEFAULT_MODE);
   }
+
+  strncpy(registry_dir, buffer, DEFAULT_SIZE);
+}
+
+void store_in_registry(char *dir) {
+  
+  FILE *registry = fopen(registry_dir, "a");
+  fputs(dir, registry);
+  fputs("\n", registry);
+  fclose(registry);
 }
 
 void create_file() {
   
   char* name;
-  char buffer[256];
+  char buffer[DEFAULT_SIZE];
   struct stat stat_of_file;
 
   do {
@@ -71,7 +83,7 @@ void create_file() {
 
   mkdir(name, S_IRWXU);
 
-  snprintf(buffer, 32, "./%s/%s.c", name, name);
+  snprintf(buffer, DEFAULT_SIZE, "./%s/%s.c", name, name);
   int if_c_file_created = creat(buffer, DEFAULT_MODE);
   if (if_c_file_created == -1) printf("[ERROR] : Creating C File");
 
@@ -81,7 +93,7 @@ void create_file() {
   fputs(starting_c_code, c_file); 
   fclose(c_file);
 
-  snprintf(buffer, 32, "./%s/makefile", name);
+  snprintf(buffer, DEFAULT_SIZE, "./%s/makefile", name);
   int if_makefile_created = creat(buffer, DEFAULT_MODE);
   if (if_makefile_created == -1) printf("[ERROR] : Creating Makefile");
 
@@ -90,6 +102,7 @@ void create_file() {
 
   fputs(starting_makefile, makefile);
   fclose(makefile);
+
 
   free(name);  
 }
@@ -106,5 +119,6 @@ int main(int argc, char **argv) {
   // printf("%d", S_IRWXU);
   // create_file();
   inital_directory_setup();
+  
   return 0;
 }
