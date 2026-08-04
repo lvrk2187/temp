@@ -94,20 +94,20 @@ void create_file() {
 
   snprintf(buffer, DEFAULT_SIZE, "./%s/%s.c", name, name);
   int if_c_file_created = creat(buffer, DEFAULT_MODE);
-  if (if_c_file_created == -1) printf("[ERROR] : Creating C File");
+  if (if_c_file_created == -1) exit(1);
 
   FILE* c_file = fopen(buffer, "w");
-  if (c_file == NULL) printf("[ERROR] : Writing C File");
+  if (c_file == NULL) exit(1);
 
   fputs(starting_c_code, c_file); 
   fclose(c_file);
 
   snprintf(buffer, DEFAULT_SIZE, "./%s/makefile", name);
   int if_makefile_created = creat(buffer, DEFAULT_MODE);
-  if (if_makefile_created == -1) printf("[ERROR] : Creating Makefile");
+  if (if_makefile_created == -1) exit(1);
 
   FILE* makefile = fopen(buffer, "w");
-  if (makefile == NULL) printf("[ERROR] : Writing Makefile");
+  if (makefile == NULL) exit(1);
 
   fputs(starting_makefile, makefile);
   fclose(makefile);
